@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>LifeOS</title>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="new.css">
+</head>
+
+<body>
+
+    <div class="app">
+
+        <!-- ===== SIDEBAR ===== -->
+
+        <aside class="sidebar">
+
+            <div class="logo">
+                LifeOS
+            </div>
+
+            <nav class="nav">
+
+                <a href="#" class="nav-link active" data-page="dashboard">Dashboard</a>
+                <a href="#" class="nav-link" data-page="tasks">Tasks</a>
+                <a href="#" class="nav-link" data-page="goals">Goals</a>
+                <a href="#" class="nav-link" data-page="habits">Habits</a>
+                <a href="#" class="nav-link" data-page="focus">Focus</a>
+                <a href="#" class="nav-link" data-page="analytics">Analytics</a>
+            </nav>
+
+        </aside>
+
+
+        <!-- ===== MAIN CONTENT ===== -->
+
+        <main class="main-content">
+
+
+
+            <!-- ===== DASHBOARD PAGE ===== -->
+             
+            <section class="page-section active" id="dashboard">
+
+                <!-- ===== TOPBAR ===== -->
+
+                <header class="topbar">
+
+                    <div>
+
+                        <p class="greeting">
+                            Good morning 👋
+                        </p>
+
+                        <h1>
+                            Welcome to LifeOS
+                        </h1>
+
+                    </div>
+
+                </header>
+
+
+                <!-- ===== DASHBOARD STATS ===== -->
+
+                <section class="dashboard">
+
+                    <!-- Today's Tasks + Completed -->
+
+                    <div class="stat-card task-stat-card">
+
+                        <div>
+
+                            <p>Today's Tasks</p>
+
+                            <h2 class="task-count">
+                                0
+                            </h2>
+
+                        </div>
+
+
+                        <div>
+
+                            <p>Completed</p>
+
+                            <h2 class="completed-count">
+                                0
+                            </h2>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Focus Time -->
+
+                    <div class="stat-card">
+
+                        <p>
+                            Focus Time
+                        </p>
+
+                        <h2>
+                            0h
+                        </h2>
+
+                    </div>
+
+
+                    <!-- Day Score -->
+
+                    <div class="stat-card">
+
+                        <p>
+                            Day Score
+                        </p>
+
+                        <h2 class="day-score">
+                            0%
+                        </h2>
+
+                    </div>
+
+                </section>
+
+
+                <!-- ===== TASKS SECTION ===== -->
+
+                <section class="tasks-section">
+
+                    <div class="section-header">
+
+                        <h2>
+                            Today's Tasks
+                        </h2>
+
+                        <button class="add-task-btn">
+                            + Add Task
+                        </button>
+
+                    </div>
+
+
+                    <!-- ===== TASK LIST ===== -->
+
+                    <div class="task-list">
+
+                        <!-- Empty state -->
+
+                        <div class="empty-state">
+
+                            <h3>
+                                No tasks yet
+                            </h3>
+
+                            <p>
+                                Add your first task and start your day.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+            </section>
+
+
+
+            <!-- ===== FULL TASKS PAGE ===== -->
+            <section class="page-section" id="tasks">
+
+                <header class="topbar">
+                    <div>
+                        <p class="greeting">Stay focused 🎯</p>
+                        <h1>My Tasks</h1>
+                    </div>
+                </header>
+
+                <section class="tasks-section">
+                    <div class="section-header">
+                        <h2>All Tasks</h2>
+                        <button class="add-task-btn">+ Add Task</button>
+                    </div>
+
+                    <div class="task-list">
+                        <div class="empty-state">
+                            <h3>No tasks yet</h3>
+                            <p>Add your first task and start your day.</p>
+                        </div>
+                    </div>
+                </section>
+
+            </section>
+        
+
+        </main>
+
+    </div>
+
+
+    <!-- ===== JAVASCRIPT ===== -->
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
