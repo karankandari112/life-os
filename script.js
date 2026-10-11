@@ -40,10 +40,7 @@ function createTask(task, list) {
     checkbox.addEventListener("change", function () {
         task.completed = checkbox.checked;
 
-        // Save updated task status
         localStorage.setItem("tasks", JSON.stringify(tasks));
-
-        // CHANGE: Refresh both pages and all dashboard stats
         renderTasks();
     });
 
@@ -56,7 +53,6 @@ function createTask(task, list) {
     taskElement.append(editBtn);
 
     editBtn.addEventListener("click", function () {
-        // Prevent opening another editor for the same task
         if (taskElement.querySelector(".edit-wrapper")) return;
 
         // Create edit input
@@ -65,12 +61,11 @@ function createTask(task, list) {
         input.value = task.text;
         input.classList.add("edit-task-input");
 
-        // Replace task text with input
         taskTextElement.replaceWith(input);
 
         let cancelEdit = false;
 
-        // Create wrapper for input and hint
+        // Create wrapper
         const editWrapper = document.createElement("div");
         editWrapper.classList.add("edit-wrapper");
 
@@ -83,58 +78,45 @@ function createTask(task, list) {
         editHint.classList.add("edit-hint");
         editWrapper.append(editHint);
 
-        // Focus input
         input.focus();
         input.select();
 
-
-        // ===== SAVE OR CLEAN UP WHEN INPUT LOSES FOCUS =====
-
+        // Save when input loses focus
         input.addEventListener("blur", function () {
             if (cancelEdit) return;
 
-            // Empty input: cancel editing
             if (input.value.trim() === "") {
+                cancelEdit = true;
                 editWrapper.replaceWith(taskTextElement);
                 return;
             }
 
-            // Save updated task text
             task.text = input.value.trim();
             localStorage.setItem("tasks", JSON.stringify(tasks));
 
-            // CHANGE: Stop blur from repeating during refresh
             cancelEdit = true;
             renderTasks();
         });
 
-
-        // ===== ENTER TO SAVE, ESCAPE TO CANCEL =====
-
+        // Enter to save, Escape to cancel
         input.addEventListener("keydown", function (event) {
             if (event.key === "Enter") {
                 event.preventDefault();
 
-                // Do not save an empty task
                 if (input.value.trim() === "") {
                     cancelEdit = true;
                     editWrapper.replaceWith(taskTextElement);
                     return;
                 }
 
-                // Update task text
                 task.text = input.value.trim();
-
-                // Save updated task
                 localStorage.setItem("tasks", JSON.stringify(tasks));
 
-                // CHANGE: Stop blur from repeating and sync both pages
                 cancelEdit = true;
                 renderTasks();
             }
 
             if (event.key === "Escape") {
-                // Cancel without saving
                 cancelEdit = true;
                 editWrapper.replaceWith(taskTextElement);
             }
@@ -150,15 +132,11 @@ function createTask(task, list) {
     taskElement.append(deleteBtn);
 
     deleteBtn.addEventListener("click", function () {
-        // Remove task from array
         tasks = tasks.filter(function (item) {
             return item !== task;
         });
 
-        // Save updated tasks
         localStorage.setItem("tasks", JSON.stringify(tasks));
-
-        // CHANGE: Refresh both lists, empty states and stats
         renderTasks();
     });
 
@@ -166,39 +144,42 @@ function createTask(task, list) {
 }
 
 
-/* ===== RENDER SAVED TASKS ON BOTH PAGES & UPDATE DASHBOARD STATS ===== */
+/* ===== RENDER TASKS SEPARATELY ON EACH PAGE ===== */
 
 function renderTasks() {
-    // Clear both lists before rendering saved tasks
+    // Clear both lists
     taskLists.forEach(function (list) {
         list.innerHTML = "";
     });
 
-    // Show empty state only when there are no saved tasks
+    // Dashboard: show first 3 tasks only
+    tasks.slice(0, 3).forEach(function (task) {
+        createTask(task, taskLists[0]);
+    });
+
+    // Tasks page: show ALL tasks
+    tasks.forEach(function (task) {
+        createTask(task, taskLists[1]);
+    });
+
+    // Show empty states only when the relevant list is empty
     if (tasks.length === 0) {
         taskLists.forEach(function (list, index) {
             if (emptyStates[index]) {
                 list.append(emptyStates[index]);
             }
         });
+    } else if (tasks.length > 0 && taskLists[0] && tasks.length > 0) {
+        // Dashboard empty state is not needed when preview tasks exist
     }
 
-    // Render every task on both pages
-    tasks.forEach(function (task) {
-        taskLists.forEach(function (list) {
-            createTask(task, list);
-        });
-    });
-
-    // Update total task count
+    // Dashboard stats count ALL tasks
     taskCount.textContent = tasks.length;
 
-    // Update completed task count
     completedCount.textContent = tasks.filter(function (item) {
         return item.completed;
     }).length;
 
-    // Update Day Score
     dayScore.textContent = tasks.length > 0
         ? Math.round(
             (tasks.filter(function (item) {
@@ -208,7 +189,8 @@ function renderTasks() {
         : "0%";
 }
 
-// CHANGE: Load saved tasks and stats when the page opens
+
+// Load saved tasks and stats when page opens
 renderTasks();
 
 
@@ -216,12 +198,11 @@ renderTasks();
 
 addTaskBtns.forEach(function (addTaskBtn) {
     addTaskBtn.addEventListener("click", function () {
-        // Select the task list for the clicked button
+        // Select the list belonging to the clicked page
         const taskList = addTaskBtn
             .closest(".page-section")
             .querySelector(".task-list");
 
-        // Prevent multiple task inputs
         if (taskList.querySelector(".task-input")) return;
 
         // Create input
@@ -230,29 +211,23 @@ addTaskBtns.forEach(function (addTaskBtn) {
         input.placeholder = "Enter your task...";
         input.classList.add("task-input");
 
-        // Add input to the page where the button was clicked
         taskList.append(input);
         input.focus();
 
-        // ===== CREATE TASK ON ENTER =====
-
+        // Create task on Enter
         input.addEventListener("keydown", function (event) {
             if (event.key === "Enter") {
                 if (input.value.trim() === "") return;
 
-                // Create new task object
                 const newTask = {
                     text: input.value.trim(),
                     completed: false
                 };
 
-                // Add task to array
                 tasks.push(newTask);
 
-                // Save tasks
                 localStorage.setItem("tasks", JSON.stringify(tasks));
 
-                // CHANGE: Remove input, then refresh both pages
                 input.remove();
                 renderTasks();
             }
@@ -272,19 +247,16 @@ navLinks.forEach(function (link) {
 
         const pageName = link.dataset.page;
 
-        // Remove active class from all navigation links
         navLinks.forEach(function (navLink) {
             navLink.classList.remove("active");
         });
 
-        // Add active class to the clicked link
         link.classList.add("active");
 
         pageSections.forEach(function (section) {
             section.classList.remove("active");
         });
 
-        // Show the selected page if it exists
         const selectedPage = document.getElementById(pageName);
 
         if (selectedPage) {

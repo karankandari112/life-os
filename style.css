@@ -425,6 +425,14 @@ input:focus-visible {
     font-size: 11px;
 }
 
+/* ===== PAGE NAVIGATION ===== */
+
+.page-section:not(.active) {
+    display: none;
+}
+
+
+
 /* ===== GENERAL TRANSITIONS ===== */
 
 a,
