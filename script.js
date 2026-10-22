@@ -169,8 +169,7 @@ function renderTasks() {
                 list.append(emptyStates[index]);
             }
         });
-    } else if (tasks.length > 0 && taskLists[0] && tasks.length > 0) {
-        // Dashboard empty state is not needed when preview tasks exist
+
     }
 
     // Dashboard stats count ALL tasks
@@ -264,3 +263,272 @@ navLinks.forEach(function (link) {
         }
     });
 });
+
+
+// ===== GOALS FUNCTIONALITY =====
+// Handles displaying goals and managing the empty state.
+
+const addGoalBtn = document.querySelector(".add-goal-btn");
+const goalList = document.querySelector(".goal-list");
+const goalEmptyState = document.querySelector("#goals .empty-state");
+let goals = JSON.parse(localStorage.getItem("goals")) || [];
+
+
+// Display goals and update the empty state
+function renderGoals() {
+    goalList.innerHTML = "";
+    goals.forEach(function (goal) {
+        // create the goalItem
+
+        const goalItem = document.createElement("div");
+        goalItem.classList.add("goal-item");
+
+        // create the goalText
+        const goalText = document.createElement("span");
+        goalText.textContent = goal;
+        goalItem.append(goalText);
+
+        // Create the Edit button
+        const editBtn = document.createElement("button")
+        editBtn.textContent = "Edit"
+        editBtn.classList.add("edit-Btn");
+        goalItem.append(editBtn)
+
+        editBtn.addEventListener("click", function () {
+
+            // Find the current goal's position
+            const goalIndex = goals.indexOf(goal);
+
+            // Ask the user for the new goal name
+            const updatedGoal = prompt("Edit your goal:", goal);
+
+            // Stop if Cancel is clicked or the input is empty
+            if (updatedGoal === null || updatedGoal.trim() === "") {
+                return;
+            }
+
+            // Check whether another goal already has the new name
+            const duplicateGoal = goals.some(function (item, index) {
+                // Ignore the current goal being edited
+                return index !== goalIndex &&
+                    item.toLowerCase() === updatedGoal.trim().toLowerCase();
+            });
+
+            // Stop editing if another goal has the same name
+            if (duplicateGoal) {
+                alert("This goal already exists!");
+                return;
+            }
+
+            // Update the goal name at its position
+            goals[goalIndex] = updatedGoal.trim();
+
+            // Save the updated goals in LocalStorage
+            localStorage.setItem("goals", JSON.stringify(goals));
+
+            // Refresh the goal list
+            renderGoals();
+        });
+        // create the delete button
+        const deleteBtn = document.createElement("button");
+        deleteBtn.textContent = "Delete";
+        deleteBtn.classList.add("delete-btn");
+        goalItem.append(deleteBtn);
+
+        // Delete the goal when the Delete button is clicked
+        deleteBtn.addEventListener("click", function () {
+
+            // Remove the selected goal from the goals array
+            goals = goals.filter(function (item) {
+                return item !== goal;
+            });
+
+            // Update LocalStorage after deleting the goal
+            localStorage.setItem("goals", JSON.stringify(goals));
+
+            // Refresh the list and empty state
+            renderGoals();
+        });
+
+
+
+
+        goalList.append(goalItem);
+    });
+
+    // Show the empty message only when no goals exist
+    goalEmptyState.style.display =
+        goalList.children.length === 0 ? "block" : "none";
+}
+
+/* Add a new goal */
+addGoalBtn.addEventListener("click", function () {
+    // Get the goal name from the user
+    const goalName = prompt("Enter your goal:");
+
+    // Prevent empty goals and handle Cancel
+    if (goalName !== null && goalName.trim() !== "") {
+        // Check whether this goal already exists
+        const goalExists = goals.some(function (goal) {
+            return goal.toLowerCase() === goalName.trim().toLowerCase();
+        });
+
+        // Stop if the goal already exists
+        if (goalExists) {
+            alert("This goal already exists!");
+            return;
+        }
+
+        // Add the new goal to the goals array
+        goals.push(goalName.trim());
+
+        // Save all goals in LocalStorage as a JSON string
+        localStorage.setItem("goals", JSON.stringify(goals));
+
+        // Refresh the goal list to display saved goals
+        renderGoals();
+    }
+});
+
+// Set the correct empty state when the page loads
+renderGoals();
+
+
+/* ===== FOCUS TIMER ===== */
+
+const focusTimer = document.querySelector("#focus-timer");
+const startFocusBtn = document.querySelector("#start-focus");
+const pauseFocusBtn = document.querySelector("#pause-focus");
+const resetFocusBtn = document.querySelector("#reset-focus");
+const focusTimeStat = document.querySelector("#focus-time-stat");
+
+// Get today's date
+function getTodayDate() {
+    const now = new Date();
+
+    return now.getFullYear() + "-" +
+        String(now.getMonth() + 1).padStart(2, "0") + "-" +
+        String(now.getDate()).padStart(2, "0");
+}
+
+// Load saved timer data
+let savedRemaining = localStorage.getItem("remainingSeconds");
+
+let remainingSeconds =
+    savedRemaining !== null ? Number(savedRemaining) : 25 * 60;
+
+let focusInterval = null;
+
+// Load focus history for all dates
+let focusHistory = JSON.parse(
+    localStorage.getItem("focusHistory")
+) || {};
+
+// Today's focus time
+let totalFocusSeconds = focusHistory[getTodayDate()] || 0;
+let currentFocusDate = getTodayDate();
+
+// Show timer and total focus time
+function updateFocusDisplay() {
+    const minutes = Math.floor(remainingSeconds / 60);
+    const seconds = remainingSeconds % 60;
+
+    focusTimer.textContent =
+        String(minutes).padStart(2, "0") + ":" +
+        String(seconds).padStart(2, "0");
+
+    focusTimeStat.textContent =
+        Math.floor(totalFocusSeconds / 60) + " min";
+}
+// Show daily focus history
+function updateFocusHistory() {
+    const historyList = document.querySelector("#focus-history-list");
+
+    if (!historyList) return;
+
+    historyList.innerHTML = "";
+
+    const dates = Object.keys(focusHistory).sort().reverse();
+
+    dates.forEach(function (date) {
+        const seconds = focusHistory[date];
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+
+        const item = document.createElement("p");
+
+        item.textContent =
+            date + " — " +
+            (hours > 0 ? hours + " hr " : "") +
+            minutes + " min";
+
+        historyList.appendChild(item);
+    });
+}
+// Save focus data in LocalStorage
+function saveFocusData() {
+    // Save remaining timer seconds
+    localStorage.setItem("remainingSeconds", remainingSeconds);
+
+    // Save today's focus time in history
+    const today = getTodayDate();
+    focusHistory[today] = totalFocusSeconds;
+
+    // Save complete daily history
+    localStorage.setItem(
+        "focusHistory",
+        JSON.stringify(focusHistory)
+    );
+
+    // Update history on screen
+    updateFocusHistory();
+}
+
+// Start timer
+startFocusBtn.addEventListener("click", function () {
+    if (focusInterval !== null) return;
+    if (remainingSeconds <= 0) return;
+
+    focusInterval = setInterval(function () {
+
+        // Check if a new day has started
+        const today = getTodayDate();
+
+        if (today !== currentFocusDate) {
+            currentFocusDate = today;
+            totalFocusSeconds = focusHistory[today] || 0;
+            updateFocusDisplay();
+        }
+        remainingSeconds--;
+        totalFocusSeconds++;
+
+        updateFocusDisplay();
+        saveFocusData();
+
+        if (remainingSeconds <= 0) {
+            clearInterval(focusInterval);
+            focusInterval = null;
+            alert("Focus session completed!");
+        }
+    }, 1000);
+});
+// Pause timer
+pauseFocusBtn.addEventListener("click", function () {
+    clearInterval(focusInterval);
+    focusInterval = null;
+    saveFocusData();
+});
+
+// Reset timer
+resetFocusBtn.addEventListener("click", function () {
+    clearInterval(focusInterval);
+    focusInterval = null;
+
+    remainingSeconds = 25 * 60;
+    updateFocusDisplay();
+    saveFocusData();
+});
+
+// Initial display
+updateFocusDisplay();
+updateFocusHistory();

@@ -43,7 +43,7 @@
 
 
             <!-- ===== DASHBOARD PAGE ===== -->
-             
+
             <section class="page-section active" id="dashboard">
 
                 <!-- ===== TOPBAR ===== -->
@@ -105,9 +105,7 @@
                             Focus Time
                         </p>
 
-                        <h2>
-                            0h
-                        </h2>
+                        <h2 id="focus-time-stat">0 min</h2>
 
                     </div>
 
@@ -197,7 +195,64 @@
                 </section>
 
             </section>
-        
+
+
+            <!-- ===== GOALS PAGE ===== -->
+            <section class="page-section" id="goals">
+
+                <header class="topbar">
+                    <div>
+                        <p class="greeting">Think bigger 🎯</p>
+                        <h1>My Goals</h1>
+                    </div>
+                </header>
+
+                <section class="goals-section">
+                    <div class="section-header">
+                        <h2>My Long-Term Goals</h2>
+                        <button class="add-goal-btn">
+                            + Add Goal
+                        </button>
+                    </div>
+
+                    <div class="empty-state">
+                        <h3>No goals yet</h3>
+                        <p>Your bigger achievements start here.</p>
+                    </div>
+
+                    <!-- Goals will appear here -->
+                    <div class="goal-list"></div>
+                </section>
+
+            </section>
+
+
+            <!-- ===== FOCUS PAGE ===== -->
+            <section class="page-section" id="focus">
+
+                <header class="topbar">
+                    <div>
+                        <p class="greeting">Stay focused 🎯</p>
+                        <h1>Focus Timer</h1>
+                    </div>
+                </header>
+
+                <section class="focus-section">
+                    <h2 id="focus-timer">25:00</h2>
+
+                    <button id="start-focus">Start</button>
+                    <button id="pause-focus">Pause</button>
+                    <button id="reset-focus">Reset</button>
+                </section>
+
+                <!-- Daily Focus History -->
+                <section class="focus-history">
+                    <h3>Daily Focus History</h3>
+                    <div id="focus-history-list"></div>
+                </section>
+                
+            </section>
+
 
         </main>
 
